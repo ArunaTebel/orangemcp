@@ -1,0 +1,72 @@
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { z } from "zod";
+import { listEmployees, DEFAULT_LIMIT, MAX_LIMIT } from "./api.js";
+import { EMPLOYEE_FILTER_SCHEMA } from "./filters.js";
+import { EMPLOYEE_INCLUDE_SCHEMA } from "./includes.js";
+
+/** Register employee MCP tools (list_employees, get_employee_filter_schema, get_employee_include_schema). */
+export function registerEmployeeTools(server: McpServer): void {
+  server.registerTool(
+    "list_employees",
+    {
+      title: "List employees",
+      description:
+        "List employees from OrangeHRM. Base URL and token from env. Map user intent to 'filters' and 'include': e.g. 'work experience only' → include: ['workExperience']; 'skills and languages' → include: ['skills','languages']. Call get_employee_include_schema to see supported include keys and userPromptHints.",
+      inputSchema: {
+        limit: z.number().int().min(1).max(MAX_LIMIT).optional().default(DEFAULT_LIMIT),
+        offset: z.number().int().min(0).optional().default(0),
+        name: z.string().optional().describe("Quick filter: employee name or ID (partial match)"),
+        filters: z
+          .record(z.unknown())
+          .optional()
+          .describe(
+            "Optional filters (e.g. joined_date, lastName). Use get_employee_filter_schema for keys and shapes."
+          ),
+        include: z
+          .array(z.string())
+          .optional()
+          .describe(
+            "Include extra data in the response (e.g. ['workExperience'], ['skills','languages']). Use get_employee_include_schema to map user prompt (e.g. 'work experience only') to include keys."
+          ),
+      },
+    },
+    async ({ limit, offset, name, filters, include }) => {
+      const result = await listEmployees({ limit, offset, name, filters, include });
+      const text = result.success
+        ? JSON.stringify(result.meta ? { data: result.data, meta: result.meta } : result.data, null, 2)
+        : result.error;
+      return {
+        content: [{ type: "text" as const, text }],
+        ...(result.success ? {} : { isError: true }),
+      };
+    }
+  );
+
+  server.registerTool(
+    "get_employee_filter_schema",
+    {
+      title: "Get employee filter schema",
+      description:
+        "Returns supported employee filters with key, type, description, userPromptHints, and example. Use when mapping user intent (e.g. 'joined on 2015-01-01') to list_employees 'filters'.",
+      inputSchema: {},
+    },
+    async () => {
+      const text = JSON.stringify(EMPLOYEE_FILTER_SCHEMA, null, 2);
+      return { content: [{ type: "text" as const, text }] };
+    }
+  );
+
+  server.registerTool(
+    "get_employee_include_schema",
+    {
+      title: "Get employee include schema",
+      description:
+        "Returns supported include keys with description and userPromptHints. Use when the user wants specific data (e.g. 'work experience only', 'skills and languages'): map their words to include keys and pass as list_employees 'include' array.",
+      inputSchema: {},
+    },
+    async () => {
+      const text = JSON.stringify(EMPLOYEE_INCLUDE_SCHEMA, null, 2);
+      return { content: [{ type: "text" as const, text }] };
+    }
+  );
+}
