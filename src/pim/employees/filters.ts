@@ -145,3 +145,24 @@ export const EMPLOYEE_FILTER_SCHEMA = [
 ] as const;
 
 export type EmployeeFilterSchema = (typeof EMPLOYEE_FILTER_SCHEMA)[number];
+
+/**
+ * Generic pattern for when the user asks for employees by a related-entity *name*
+ * (location, job title, sub unit, cost centre, etc.). The API only accepts IDs for these;
+ * the AI should use include and filter the returned data client-side.
+ */
+export const FILTER_BY_RELATED_NAME_PATTERN = {
+  when: "User asks for employees by a related-entity name (e.g. 'in New York Office', 'job title Sales Manager', 'department IT', 'cost centre Sales')",
+  apiLimitation: "The API filter for these fields accepts only IDs (e.g. filter[location]=2,3), not names.",
+  whatToDo:
+    "Call list_employees with the relevant include so the response contains the related data (e.g. include: ['locations'], ['jobTitle'], ['subDivision'], ['costCentre']). Then filter the returned data array yourself by matching the requested name (e.g. employee.locations[].name, employee.jobTitle.name). Use a sufficient limit or paginate to cover all employees if needed.",
+  includeToPath: {
+    location: "locations",
+    jobTitle: "jobTitle",
+    subUnit: "subDivision",
+    costCentre: "costCentre",
+    jobCategory: "jobCategory",
+    employeeStatus: "employeeStatus",
+    workSchedule: "workSchedule",
+  } as const,
+};
