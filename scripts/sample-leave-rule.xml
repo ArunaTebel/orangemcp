@@ -1,0 +1,246 @@
+<?xml version="1.0"?>
+<xml>
+  <flow description="Application and workflow settings for the leave type">
+    <empapply description="Whether employees can apply for this leave themselves. 0=No, 1=Yes">1</empapply>
+    <adminassign description="Whether administrators can assign this leave to employees. 0=No, 1=Yes">1</adminassign>
+    <supervisorassign description="Whether supervisors can assign this leave to their subordinates. 0=No, 1=Yes">1</supervisorassign>
+    <show_projected description="Whether to show projected leave balance. 0=No, 1=Yes">1</show_projected>
+    <attachments description="Settings for file attachments on leave requests">
+      <enabled description="Whether attachments are enabled for this leave type. 0=No, 1=Yes">1</enabled>
+      <mandatory description="Whether attachments are mandatory when applying. 0=No, 1=Yes">0</mandatory>
+      <notification description="Whether to send a reminder notification when attachment is required. 0=No, 1=Yes">0</notification>
+    </attachments>
+    <holidaysAsWorkingDay description="Whether holidays count as working days for this leave type. 0=No, 1=Yes">1</holidaysAsWorkingDay>
+    <weekendsAsWorkingDay description="Whether weekends count as working days for this leave type. 0=No, 1=Yes">1</weekendsAsWorkingDay>
+    <showWarningUponInsufficientBalance description="Show a warning when the employee has insufficient balance to apply. 0=No, 1=Yes">1</showWarningUponInsufficientBalance>
+  </flow>
+  <groups description="Employee groups used for entitlement tiers and restrictions. Each group can have different accrual and rollover rules.">
+    <group description="A single employee group definition; group name is referenced in restrictions and accrual.">
+      <name description="Display name of the group (e.g. Managers, long-service employees)">Managers</name>
+      <order description="Display or priority order of this group (numeric)">1</order>
+      <job description="Comma-separated job title IDs; employees with these job titles belong to this group">24,8</job>
+      <jobcat description="Job category ID; employees in this category belong to this group">1</jobcat>
+      <empstatus description="Employment status ID; employees with this status belong to this group">4</empstatus>
+      <customFieldGroups description="Custom field criteria for this group (empty if none)"/>
+    </group>
+    <group description="A single employee group definition; group name is referenced in restrictions and accrual.">
+      <name description="Display name of the group (e.g. Managers, long-service employees)">Male workers having more than 10 years of service period</name>
+      <order description="Display or priority order of this group (numeric)">2</order>
+      <gender description="Gender filter for group. 1=Male, 2=Female, 3=Non-binary">1</gender>
+      <customFieldGroups description="Custom field criteria for this group (empty if none)"/>
+      <yos description="Years of service range; employees with service within this range belong to the group">
+        <from description="Minimum years of service (inclusive)">10</from>
+        <to description="Maximum years of service (inclusive); use a high number for no upper limit">999</to>
+      </yos>
+      <monthsofservice description="Months of service range (optional; empty if not used)">
+        <from description="Minimum months of service"/>
+        <to description="Maximum months of service"/>
+      </monthsofservice>
+    </group>
+    <group description="A single employee group definition; group name is referenced in restrictions and accrual.">
+      <name description="Display name of the group (e.g. Managers, long-service employees)">Employees having the A+ blood group</name>
+      <order description="Display or priority order of this group (numeric)">3</order>
+      <customFieldGroups description="Custom field criteria for this group (empty if none)">
+        <customField description="One custom field condition (e.g. Blood Group = A+)">
+          <customFieldId description="ID of the custom field in the system">1</customFieldId>
+          <name description="Display name of the custom field">Blood Group</name>
+          <condition description="Operator for the condition (e.g. 1=equals, 2=not equals)">1</condition>
+          <values description="Value(s) to match (e.g. A+); comma-separated if multiple">A+</values>
+        </customField>
+      </customFieldGroups>
+    </group>
+  </groups>
+  <applyrestriction description="Restrictions applied when applying or assigning this leave. Each filter applies to specified employee groups and/or user roles.">
+    <filter description="One restriction rule: who it applies to (user roles) and which employee groups are affected.">
+      <name description="Restriction type: MoreThanCurrentRestrictionFilter = employee cannot request more than their current balance/entitlement">MoreThanCurrentRestrictionFilter</name>
+      <userroles description="Role-based scope: restrict = roles that get this restriction; skip = roles exempt from it">
+        <restrict description="Roles that are subject to this restriction"><apply/><assign description="Comma-separated role IDs that are restricted">5,3</assign></restrict>
+        <skip description="Roles that are exempt from this restriction"><apply/><assign description="Comma-separated role IDs that are skipped">1</assign></skip>
+      </userroles>
+      <employeegroups description="Employee group names this restriction applies to"><name description="Name of an employee group (must match a group defined above)">Managers</name></employeegroups>
+    </filter>
+    <filter description="One restriction rule: who it applies to (user roles) and which employee groups are affected.">
+      <name description="Restriction type: HalfDayRestrictionFilter = rules for half-day leave (e.g. minimum or maximum half-days)">HalfDayRestrictionFilter</name>
+      <userroles description="Role-based scope: restrict = roles that get this restriction; skip = roles exempt from it">
+        <restrict description="Roles that are subject to this restriction"><apply/><assign description="Comma-separated role IDs that are restricted">5</assign></restrict>
+        <skip description="Roles that are exempt from this restriction"><apply/><assign description="Comma-separated role IDs that are skipped">1,3</assign></skip>
+      </userroles>
+      <employeegroups description="Employee group names this restriction applies to"><name description="Name of an employee group (must match a group defined above)">Male workers having more than 10 years of service period</name></employeegroups>
+    </filter>
+    <filter description="One restriction rule: who it applies to (user roles) and which employee groups are affected.">
+      <name description="Restriction type: SpecificTimeRestrictionFilter = leave can only be taken in specific time slots or periods">SpecificTimeRestrictionFilter</name>
+      <userroles description="Role-based scope: restrict = roles that get this restriction; skip = roles exempt from it">
+        <restrict description="Roles that are subject to this restriction"><apply/><assign description="Comma-separated role IDs that are restricted">1,5,3</assign></restrict>
+        <skip description="Roles that are exempt from this restriction"><apply/><assign description="Comma-separated role IDs that are skipped"/></skip>
+      </userroles>
+      <employeegroups description="Employee group names this restriction applies to">
+        <name description="Name of an employee group (must match a group defined above)">Employees having the A+ blood group</name>
+        <name description="Name of an employee group (must match a group defined above)">Male workers having more than 10 years of service period</name>
+      </employeegroups>
+    </filter>
+    <filter description="One restriction rule: who it applies to (user roles) and which employee groups are affected.">
+      <name description="Restriction type: ConfirmRestrictionFilter = leave request must be confirmed (params may be confirmation messages or labels)">ConfirmRestrictionFilter</name>
+      <params description="Optional parameters for this filter (meaning depends on filter type)">
+        <param description="First parameter (e.g. message or threshold)">AAAA???</param>
+        <param description="Second parameter">AAAA!!!!</param>
+      </params>
+      <userroles description="Role-based scope: restrict = roles that get this restriction; skip = roles exempt from it">
+        <restrict description="Roles that are subject to this restriction"><apply/><assign description="Comma-separated role IDs that are restricted"/></restrict>
+        <skip description="Roles that are exempt from this restriction"><apply/><assign description="Comma-separated role IDs that are skipped">1,5,3</assign></skip>
+      </userroles>
+      <employeegroups description="Employee group names this restriction applies to"><name description="Name of an employee group (must match a group defined above)">Managers</name></employeegroups>
+    </filter>
+    <filter description="One restriction rule: who it applies to (user roles) and which employee groups are affected.">
+      <name description="Restriction type: ServicePeriodLessThanRestrictionFilter = restriction applies when employee's service period is less than param (e.g. months)">ServicePeriodLessThanRestrictionFilter</name>
+      <params description="Optional parameters for this filter (e.g. threshold in months)"><param description="Threshold value (e.g. months of service)">34</param></params>
+      <userroles description="Role-based scope: restrict = roles that get this restriction; skip = roles exempt from it">
+        <restrict description="Roles that are subject to this restriction"><apply/><assign description="Comma-separated role IDs that are restricted"/></restrict>
+        <skip description="Roles that are exempt from this restriction"><apply/><assign description="Comma-separated role IDs that are skipped">1,5,3</assign></skip>
+      </userroles>
+      <employeegroups description="Employee group names this restriction applies to"><name description="Name of an employee group (must match a group defined above)">Male workers having more than 10 years of service period</name></employeegroups>
+    </filter>
+    <filter description="One restriction rule: who it applies to (user roles) and which employee groups are affected.">
+      <name description="Restriction type: TotalServicePeriodLessThanRestrictionFilter = restriction when total creditable service is less than param">TotalServicePeriodLessThanRestrictionFilter</name>
+      <params description="Optional parameters for this filter (e.g. total months threshold)"><param description="Threshold value (e.g. total months)">45</param></params>
+      <userroles description="Role-based scope: restrict = roles that get this restriction; skip = roles exempt from it">
+        <restrict description="Roles that are subject to this restriction"><apply/><assign description="Comma-separated role IDs that are restricted"/></restrict>
+        <skip description="Roles that are exempt from this restriction"><apply/><assign description="Comma-separated role IDs that are skipped">1,5,3</assign></skip>
+      </userroles>
+      <employeegroups description="Employee group names this restriction applies to"><name description="Name of an employee group (must match a group defined above)">Managers</name></employeegroups>
+    </filter>
+    <filter description="One restriction rule: who it applies to (user roles) and which employee groups are affected.">
+      <name description="Restriction type: MaxNumOfConsecutiveRestrictionFilter = maximum number of consecutive days that can be taken; params typically = max days and possibly period">MaxNumOfConsecutiveRestrictionFilter</name>
+      <params description="Optional parameters for this filter (e.g. max consecutive days, period type)">
+        <param description="First parameter (e.g. maximum consecutive days)">43</param>
+        <param description="Second parameter (e.g. 1=calendar days or period type)">1</param>
+      </params>
+      <userroles description="Role-based scope: restrict = roles that get this restriction; skip = roles exempt from it">
+        <restrict description="Roles that are subject to this restriction"><apply/><assign description="Comma-separated role IDs that are restricted">5</assign></restrict>
+        <skip description="Roles that are exempt from this restriction"><apply/><assign description="Comma-separated role IDs that are skipped">1,3</assign></skip>
+      </userroles>
+      <employeegroups description="Employee group names this restriction applies to"><name description="Name of an employee group (must match a group defined above)">Male workers having more than 10 years of service period</name></employeegroups>
+    </filter>
+    <filter description="One restriction rule: who it applies to (user roles) and which employee groups are affected.">
+      <name description="Restriction type: EligibleChildRestrictionFilter = employee must have an eligible child (param may be child age limit or count)">EligibleChildRestrictionFilter</name>
+      <params description="Optional parameters for this filter (e.g. maximum child age)"><param description="Parameter (e.g. age limit for eligible child)">5</param></params>
+      <userroles description="Role-based scope: restrict = roles that get this restriction; skip = roles exempt from it">
+        <restrict description="Roles that are subject to this restriction"><apply/><assign description="Comma-separated role IDs that are restricted"/></restrict>
+        <skip description="Roles that are exempt from this restriction"><apply/><assign description="Comma-separated role IDs that are skipped">1,5,3</assign></skip>
+      </userroles>
+      <employeegroups description="Employee group names this restriction applies to"><name description="Name of an employee group (must match a group defined above)">Employees having the A+ blood group</name></employeegroups>
+    </filter>
+  </applyrestriction>
+  <elgibility description="Eligibility criteria: which employees can receive this leave type (employment status, job title, location, gender, service, dependents, etc.). Note: element name is elgibility (typo in schema).">
+    <empstatus description="Employment status: which statuses are included or excluded from eligibility">
+      <include description="Status IDs that are eligible"><status description="Employment status ID">1</status><status description="Employment status ID">6</status><status description="Employment status ID">4</status><status description="Employment status ID">3</status></include>
+      <exclude description="Status IDs that are excluded from eligibility"/>
+    </empstatus>
+    <empjobtitles description="Job titles: which job titles are included or excluded from eligibility">
+      <include description="Job title IDs that are eligible"><status description="Job title ID (element name may be status in schema)">2</status><status description="Job title ID">24</status><status description="Job title ID">3</status></include>
+      <exclude description="Job title IDs that are excluded"/>
+    </empjobtitles>
+    <emplocations description="Locations: which work locations are included or excluded"><include description="Location IDs that are eligible"/><exclude description="Location IDs that are excluded"/></emplocations>
+    <empjobcategories description="Job categories: which categories are included or excluded"><include description="Job category IDs that are eligible"/><exclude description="Job category IDs that are excluded"/></empjobcategories>
+    <empgenders description="Genders: which genders are eligible. 1=Male, 2=Female, 3=Non-binary">
+      <include description="Gender IDs that are eligible"><gender description="Gender ID">2</gender><gender description="Gender ID">1</gender></include>
+      <exclude description="Gender IDs that are excluded"/>
+    </empgenders>
+    <yearofservice description="Years of service range: employee must have between from and to years of service to be eligible">
+      <from description="Minimum years of service (inclusive)">13</from>
+      <to description="Maximum years of service (inclusive)">56</to>
+    </yearofservice>
+    <customFieldGroups description="Custom field criteria for eligibility (empty if none)"/>
+    <monthsofservice description="Months of service range (optional)"><from description="Minimum months"/><to description="Maximum months"/></monthsofservice>
+    <totalyearofservice description="Total years of service range (optional)"><from description="Minimum total years"/><to description="Maximum total years"/></totalyearofservice>
+    <totalmonthofservice description="Total months of service range (optional)"><from description="Minimum total months"/><to description="Maximum total months"/></totalmonthofservice>
+    <restriction description="Additional eligibility restriction"><moreThanCurrent description="Whether entitlement can exceed current period balance. 0=No, 1=Yes">0</moreThanCurrent></restriction>
+    <dependent description="Eligibility based on having a dependent (e.g. child) meeting relationship, nationality, and age criteria">
+      <relationship description="Type of dependent (e.g. child, spouse)">child</relationship>
+      <natinality description="Nationality ID for the dependent (note: typo natinality in schema)">2</natinality>
+      <natinalitycondition description="How nationality is compared (e.g. equal, not equal)">equal</natinalitycondition>
+      <agecondition description="Age condition type (e.g. between, less than, greater than)">between</agecondition>
+      <ageone description="First age bound (e.g. minimum age in years)">5</ageone>
+      <agetwo description="Second age bound (e.g. maximum age in years)">16</agetwo>
+    </dependent>
+    <yearofpermanency description="Years since permanency date range (optional)">
+      <from description="Minimum years since permanency">4</from>
+      <to description="Maximum years since permanency">66</to>
+    </yearofpermanency>
+    <monthsofpermanency description="Months since permanency range (optional)"><from description="Minimum months"/><to description="Maximum months"/></monthsofpermanency>
+    <calendaryear description="Calendar year range for eligibility (optional)"><from description="From year"/><to description="To year"/></calendaryear>
+  </elgibility>
+  <entitlement description="How leave is accrued and maximum entitlement. Includes per-group accrual amounts and cap types.">
+    <adminAdjust description="Whether administrators can manually adjust entitlement. 0=No, 1=Yes">1</adminAdjust>
+    <accure description="Whether leave accrues (is credited over time). 0=No, 1=Yes">1</accure>
+    <accrualRules description="Rules that define when and how much leave is credited">
+      <validFrom description="When accrual period starts (e.g. DA=Date of joining, DO=Date of leave type)">DA</validFrom>
+      <frequency description="How often leave is credited (e.g. monthly, annually)">
+        <type description="Frequency type (e.g. M=Month, Y=Year)">M</type>
+        <dayOfCredit description="Day when credit is applied (e.g. SOM=Start of month, EOM=End of month)">SOM</dayOfCredit>
+        <repeatAfter description="Repeat interval (e.g. 1 = every period)">1</repeatAfter>
+        <accrualStart description="Optional start date or offset for first accrual"/>
+      </frequency>
+      <firstAccrual description="First accrual amount: full = full period amount, partial = prorated">full</firstAccrual>
+      <accrualGroups description="Per-employee-group accrual: each group can have different accrual amount and cap">
+        <empgroup description="Accrual settings for one employee group (name must match a group defined above)">
+          <name description="Employee group name">Managers</name>
+          <accrualAmount description="Units of leave credited per frequency period">2</accrualAmount>
+          <maxAccrualAmount description="Maximum balance cap (empty = no cap)">55</maxAccrualAmount>
+          <maxCapValue description="Cap type: ET=Entitlement total, LB=Leave balance, NO=None (or similar)">ET</maxCapValue>
+          <entitlmentTypesToTotal description="Entitlement type IDs that contribute to the total (note: typo entitlment in schema)"><id description="Entitlement type ID">2</id><id description="Entitlement type ID">1</id></entitlmentTypesToTotal>
+        </empgroup>
+        <empgroup description="Accrual settings for one employee group (name must match a group defined above)">
+          <name description="Employee group name">Male workers having more than 10 years of service period</name>
+          <accrualAmount description="Units of leave credited per frequency period">5</accrualAmount>
+          <maxAccrualAmount description="Maximum balance cap (empty = no cap)">44</maxAccrualAmount>
+          <maxCapValue description="Cap type: ET=Entitlement total, LB=Leave balance, NO=None (or similar)">LB</maxCapValue>
+          <entitlmentTypesToTotal description="Entitlement type IDs that contribute to the total (note: typo entitlment in schema)"><id description="Entitlement type ID">1</id><id description="Entitlement type ID">2</id></entitlmentTypesToTotal>
+        </empgroup>
+        <empgroup description="Accrual settings for one employee group (name must match a group defined above)">
+          <name description="Employee group name">Employees having the A+ blood group</name>
+          <accrualAmount description="Units of leave credited per frequency period">55</accrualAmount>
+          <maxAccrualAmount description="Maximum balance cap (empty = no cap)"/>
+          <maxCapValue description="Cap type: ET=Entitlement total, LB=Leave balance, NO=None (or similar)">NO</maxCapValue>
+          <entitlmentTypesToTotal description="Entitlement type IDs that contribute to the total (note: typo entitlment in schema)"><id description="Entitlement type ID">1</id><id description="Entitlement type ID">2</id></entitlmentTypesToTotal>
+        </empgroup>
+      </accrualGroups>
+    </accrualRules>
+  </entitlement>
+  <rollover description="Carry-forward and expiry: how much unused leave can be carried to the next period and when it expires. Can be defined per group or as default.">
+    <allow description="Whether rollover (carry-forward) is allowed for this leave type. 0=No, 1=Yes">1</allow>
+    <groups description="Per-group rollover settings (overrides default for each named group)">
+      <group name="Managers" description="Rollover rules for the employee group named Managers">
+        <expireAfterUnit description="Unit for expiry period (e.g. M=Month, D=Day)">M</expireAfterUnit>
+        <expireAfterUnitValue description="Number of units after which carried leave expires">5</expireAfterUnitValue>
+        <maxAmount description="Maximum amount that can be carried forward (empty = no limit)">44</maxAmount>
+        <amount description="Default or fixed amount that can be carried forward">1</amount>
+        <carryForwardNegative description="Whether negative balance can carry forward. 0=No, 1=Yes">1</carryForwardNegative>
+        <includeOverdrawnLeave description="Include overdrawn leave in rollover calculation. 0=No, 1=Yes">1</includeOverdrawnLeave>
+      </group>
+      <group name="Male workers having more than 10 years of service period" description="Rollover rules for the employee group named Male workers having more than 10 years of service period">
+        <expireAfterUnit description="Unit for expiry period (e.g. M=Month, D=Day)">M</expireAfterUnit>
+        <expireAfterUnitValue description="Number of units after which carried leave expires">2</expireAfterUnitValue>
+        <maxAmount description="Maximum amount that can be carried forward (empty = no limit)"/>
+        <amount description="Default or fixed amount that can be carried forward">2</amount>
+        <carryForwardNegative description="Whether negative balance can carry forward. 0=No, 1=Yes">0</carryForwardNegative>
+        <includeOverdrawnLeave description="Include overdrawn leave in rollover calculation. 0=No, 1=Yes">1</includeOverdrawnLeave>
+      </group>
+      <group name="Employees having the A+ blood group" description="Rollover rules for the employee group named Employees having the A+ blood group">
+        <expireAfterUnit description="Unit for expiry period (e.g. M=Month, D=Day)">M</expireAfterUnit>
+        <expireAfterUnitValue description="Number of units after which carried leave expires"/>
+        <maxAmount description="Maximum amount that can be carried forward (empty = no limit)">77</maxAmount>
+        <amount description="Default or fixed amount that can be carried forward">1</amount>
+        <carryForwardNegative description="Whether negative balance can carry forward. 0=No, 1=Yes">1</carryForwardNegative>
+        <includeOverdrawnLeave description="Include overdrawn leave in rollover calculation. 0=No, 1=Yes">0</includeOverdrawnLeave>
+      </group>
+    </groups>
+    <allowEditBFAmount description="Whether users can edit the brought-forward amount. 0=No, 1=Yes">1</allowEditBFAmount>
+    <expireAfterUnit description="Default expiry unit (e.g. M=Month) when not overridden by group">M</expireAfterUnit>
+    <expireAfterUnitValue description="Default expiry value when not overridden by group">5</expireAfterUnitValue>
+    <maxAmount description="Default maximum carry-forward when not overridden by group">44</maxAmount>
+    <amount description="Default carry-forward amount when not overridden by group">1</amount>
+    <carryForwardNegative description="Default: allow negative balance to carry forward. 0=No, 1=Yes">1</carryForwardNegative>
+    <includeOverdrawnLeave description="Default: include overdrawn leave in rollover. 0=No, 1=Yes">1</includeOverdrawnLeave>
+  </rollover>
+  <workflowrules description="Optional workflow rules for approval or notifications (empty if none)"/>
+</xml>
