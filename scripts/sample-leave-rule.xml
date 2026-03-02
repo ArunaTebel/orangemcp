@@ -180,7 +180,13 @@
         <repeatAfter description="Repeat interval (e.g. 1 = every period)">1</repeatAfter>
         <accrualStart description="Optional start date or offset for first accrual"/>
       </frequency>
-      <firstAccrual description="First accrual amount: full = full period amount, partial = prorated">full</firstAccrual>
+      <firstAccrual description="First accrual amount: full = full period amount, prorate = prorated, etc.">prorate</firstAccrual>
+      <proration method="default" description="Proration method to use for the first accrual">
+				<numerator description="Numerator to use for the proration (e.g. remaining_working, total_working, remaining_calendar, total_calendar, fixed, etc.)">remaining_working</numerator>
+				<numerator_input description="Numerator value to use for the proration (e.g. 10, 20, etc.)"/>
+				<denominator description="Denominator to use for the proration (e.g. remaining_working, total_working, remaining_calendar, total_calendar, fixed, etc.)">total_working</denominator>
+				<denominator_input description="Denominator value to use for the proration (e.g. 10, 20, etc.)"/>
+			</proration>
       <accrualGroups description="Per-employee-group accrual: each group can have different accrual amount and cap">
         <empgroup description="Accrual settings for one employee group (name must match a group defined above)">
           <name description="Employee group name">Managers</name>
