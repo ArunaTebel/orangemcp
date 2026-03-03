@@ -140,7 +140,7 @@ Example `.cursor/mcp.json` (localhost):
 {
   "mcpServers": {
     "orangehrm": {
-      "url": "http://127.0.0.1:3000/mcp", // Or the ngrok URL
+      "url": "http://127.0.0.1:3000/mcp (or the ngrok URL)",
       "transport": "streamableHttp"
     }
   }
