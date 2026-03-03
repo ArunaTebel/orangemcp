@@ -20,8 +20,8 @@ An [MCP](https://modelcontextprotocol.io/) (Model Context Protocol) server that 
 ## Prerequisites
 
 - **Node.js** 18+ (ESM, `node:fs`, `fetch`)
-- An OrangeHRM instance with API v2 and OAuth2 client credentials enabled
-- OAuth2 client ID and secret for the OrangeHRM instance
+- An OrangeHRM instance (local or hosted) with an OAuth2 client with client_credentials grant type enabled
+- Client ID and secret for the above OAuth Client.
 
 ## Installation
 
@@ -131,16 +131,16 @@ This server uses **Streamable HTTP** transport, not stdio. In Cursor:
 1. Open **Settings → Tools & MCP** (or edit `.cursor/mcp.json` in your project or user config).
 2. Add an MCP server with:
    - **Type**: `streamableHttp`
-   - **URL**: `http://127.0.0.1:3000/mcp` (or your host/port if different)
+   - **URL**: Use the **localhost** URL when Cursor runs on the same machine as the server (`http://127.0.0.1:3000/mcp`), or the **ngrok** URL when the server is exposed via ngrok (e.g. `https://abc123.ngrok.io/mcp`). Choose whichever fits your setup.
    - **Name**: e.g. `orangehrm`
 
-Example `.cursor/mcp.json`:
+Example `.cursor/mcp.json` (localhost):
 
 ```json
 {
   "mcpServers": {
     "orangehrm": {
-      "url": "http://127.0.0.1:3000/mcp",
+      "url": "http://127.0.0.1:3000/mcp", // Or the ngrok URL
       "transport": "streamableHttp"
     }
   }
